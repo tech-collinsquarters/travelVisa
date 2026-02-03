@@ -1,0 +1,76 @@
+# Robots.txt for EazyViza - Australian Visa Application Landing Page
+# Domain: travel.eazyviza.com
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow crawling of API endpoints (if any)
+Disallow: /api/
+Disallow: /tables/
+
+# Disallow crawling of admin areas (if any)
+Disallow: /admin/
+
+# Disallow crawling of private or sensitive directories
+Disallow: /private/
+
+# Allow crawling of CSS and JavaScript for proper rendering
+Allow: /css/
+Allow: /js/
+Allow: /*.css$
+Allow: /*.js$
+
+# Allow crawling of images
+Allow: /images/
+
+# Sitemap location
+Sitemap: https://travel.eazyviza.com/sitemap.xml
+
+# Crawl-delay (optional - helps prevent server overload)
+# Crawl-delay: 1
+
+# Specific rules for major search engines
+
+# Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Google Images
+User-agent: Googlebot-Image
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+# Yahoo
+User-agent: Slurp
+Allow: /
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+
+# Baidu (Important for Chinese market)
+User-agent: Baiduspider
+Allow: /
+
+# Yandex (Important for Russian/Eastern European market)
+User-agent: YandexBot
+Allow: /
+
+# Block bad bots and scrapers
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

@@ -73,6 +73,13 @@ faqItems.forEach(item => {
 
 // ===== FORM VALIDATION & SUBMISSION =====
 
+// GA4 helper
+function trackGa4Event(eventName, params) {
+    if (typeof gtag !== 'undefined') {
+        gtag('event', eventName, params || {});
+    }
+}
+
 // Phone number validation
 function validatePhone(phone) {
     // Allow international format: +, digits, spaces, hyphens, parentheses
@@ -179,13 +186,15 @@ async function handleFormSubmission(form, successElement) {
             });
         }
 
-        // Optional: Send to Google Analytics
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'generate_lead', {
-                'event_category': 'Lead Form',
-                'event_label': data.visa_type
-            });
-        }
+        // Optional: Send to Google Analytics 4
+        trackGa4Event('generate_lead', {
+            'event_category': 'Lead Form',
+            'event_label': data.visa_type,
+            'form_id': form.id || 'unknown_form',
+            'visa_type': data.visa_type,
+            'country': data.country,
+            'lead_source': data.source
+        });
 
         return true;
     } catch (error) {
@@ -314,6 +323,13 @@ formInputs.forEach(input => {
 // ===== WHATSAPP BUTTON PULSE ANIMATION =====
 const whatsappButton = document.querySelector('.whatsapp-float');
 if (whatsappButton) {
+    whatsappButton.addEventListener('click', () => {
+        trackGa4Event('contact', {
+            'method': 'WhatsApp',
+            'location': 'floating_button'
+        });
+    });
+
     setInterval(() => {
         whatsappButton.style.animation = 'none';
         setTimeout(() => {
@@ -342,12 +358,30 @@ window.addEventListener('load', () => {
         fbq('track', 'PageView');
     }
 
-    if (typeof gtag !== 'undefined') {
-        gtag('event', 'page_view', {
-            'page_title': 'EazyViza Landing Page',
-            'page_location': window.location.href
+    trackGa4Event('page_view', {
+        'page_title': 'EazyViza Landing Page',
+        'page_location': window.location.href,
+        'page_path': window.location.pathname
+    });
+});
+
+// ===== CTA CLICK TRACKING (GA4) =====
+const applyLinks = document.querySelectorAll('a[href="#apply"]');
+applyLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        let location = 'unknown';
+        const section = link.closest('section');
+        if (section && section.id) {
+            location = section.id;
+        } else if (link.closest('.header')) {
+            location = 'header';
+        }
+
+        trackGa4Event('cta_click', {
+            'link_text': link.textContent.trim(),
+            'link_location': location
         });
-    }
+    });
 });
 
 // ===== EXIT INTENT POPUP (Optional) =====
@@ -359,9 +393,18 @@ document.addEventListener('mouseleave', (e) => {
         // You can show a modal or popup here
         console.log('User showing exit intent - consider showing special offer');
 
+        trackGa4Event('exit_intent', {
+            'location': 'landing_page',
+            'prompt_shown': true
+        });
+
         // Example: Scroll to application form
         const applySection = document.getElementById('apply');
         if (applySection && confirm('Wait! Get a FREE visa eligibility check before you go?')) {
+            trackGa4Event('cta_click', {
+                'link_text': 'Exit intent apply now',
+                'link_location': 'exit_intent'
+            });
             applySection.scrollIntoView({ behavior: 'smooth' });
         }
     }
